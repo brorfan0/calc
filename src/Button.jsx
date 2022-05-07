@@ -1,7 +1,8 @@
 import "./button.css"
+import './App'
 function Button(props) {
     return (
-            <button style={{backgroundColor: props.color, borderRadius: props.corners, display: "inline", width: props.wid}}
+            <button className={props.clas}
                     onClick={props.click}>
                     {props.text}</button>
     )
