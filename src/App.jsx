@@ -4,41 +4,56 @@ import Button from "./Button";
 
 
 function App() {
-    const [count, setCount] = useState(0);
-    const [name, setName] = useState("");
     const [calculations, setCalculations] = useState("");
     const [equation, setEquation] = useState("");
-    // const [numbs, setNumbs] = useState("");
+    const [numbs, setNumbs] = useState("");
     const [ifNum, setIfNum] = useState("");
-    let numbs = "1";
+    const [sqrd, setSqrd] = useState("")
+    const [ifSqr, setIfSqr] = useState(0);
+    const [sign, setSign] = useState("neg");
 
     useEffect(()=>{
         if(ifNum === "not"){
-            numbs = "";
-            console.log("a");
+            setNumbs("")
         }else{
             const added = calculations.slice(-1)
-            numbs += added;
-            console.log("b");
+            setNumbs(numbs+added)
         }
-        console.log(numbs)
     }, [ifNum]);
 
     function handleSndClick(e){
         setIfNum("not");
-
+        setSign("neg");
         if(equation === "" && calculations === ""){
             alert("Can't do this");
         }else if(equation !== ""){
             setCalculations(equation+e);
             setEquation("")
         }else{
-            setCalculations(calculations+e);
+            if(ifSqr === 1){
+                const sqrLength = sqrd.length + 1;
+                const sqrdNumb = Number(sqrd);
+                const mathSqrd = Math.sqrt(sqrdNumb);
+                const stringSqrd = mathSqrd.toString()
+                if(sqrLength === numbs.length){
+                    setCalculations(calculations.slice(0, -sqrLength) + stringSqrd + e);
+                }else{
+                    setCalculations(calculations.slice(0, -sqrLength) + "*" + stringSqrd + e);
+                }
+                console.log(sqrLength + ", " + numbs.length)
+                setIfSqr(0)
+            }else{
+                setCalculations(calculations+e);
+            }
         }
     }
 
     function handleClick(e){
         setIfNum(ifNum+"num");
+
+        if(ifSqr === 1){
+            setSqrd(sqrd+e);
+        }
 
         if(equation === "") {
             setCalculations(calculations+e);
@@ -52,8 +67,35 @@ function App() {
 
     function calculate(){
         if(equation === ""){
-            setEquation(eval(calculations));
-            setCalculations("");
+            if(ifSqr === 1){
+                const sqrLength = sqrd.length + 1;
+                const sqrdNumb = Number(sqrd);
+                const mathSqrd = Math.sqrt(sqrdNumb);
+                const stringSqrd = mathSqrd.toString()
+                if(calculations.slice(0, -sqrLength)===""){
+                    setEquation(eval(stringSqrd))
+                }else{
+                    if(calculations.length !== numbs.length){
+                        if(numbs.length === sqrLength){
+                            setEquation(eval(calculations.slice(0, -sqrLength) + stringSqrd));
+                        }else{
+                            setEquation(eval(calculations.slice(0, -sqrLength) + "*" + stringSqrd));
+                            console.log(calculations.slice(0, -sqrLength))
+                        }
+                    }else{
+                        setEquation(eval(calculations.slice(0, -sqrLength) + "*" + stringSqrd));
+                    }
+                }
+                setCalculations("");
+                setIfSqr(0)
+                setSqrd("")
+            }
+            else{
+                setEquation(eval(calculations));
+                setCalculations("");
+            }
+
+            setNumbs("")
         }
     }
 
@@ -72,14 +114,65 @@ function App() {
     function del(){
         setCalculations(calculations.slice(0, -1));
         setNumbs(numbs.slice(0, -1));
+        setSqrd(sqrd.slice(0, -1));
+        if(sqrd === ""){
+            setIfSqr(0);
+        }
     }
 
     function clear(){
         setCalculations("");
         setNumbs("");
+        setEquation("")
+        setSqrd("")
     }
 
     function pow(){
+        const numbLength = numbs.length
+        const power = numbs + "*" + numbs;
+        const toPower = eval(power)
+        setCalculations(calculations.slice(0, -numbLength) + toPower)
+        setNumbs(toPower)
+    }
+
+    function sqrt(){
+        if(equation !== ""){
+            setIfNum("num");
+            setIfSqr(1);
+            setCalculations(equation+"s");
+            setEquation("");
+        }else{
+            setIfNum("num");
+            setIfSqr(1);
+            setCalculations(calculations+"s");
+        }
+    }
+
+    function minOrPlus(){
+        if(numbs === ""){
+            if(equation !== ""){
+                if(sign === "neg"){
+                    setEquation("-" + equation);
+                    setSign("pos");
+                }else{
+                    setEquation(equation.slice(1));
+                    setSign("neg");
+                }
+            }else{
+                alert("You can only change signs on a number");
+            }
+        }else{
+            if(sign === "neg"){
+                console.log(calculations + ", " + numbs);
+                setCalculations(calculations.slice(0, -numbs.length) + "-" + numbs);
+                setNumbs("-" + numbs);
+                setSign("pos");
+            }else{
+                setCalculations(calculations.slice(0, -(numbs.length+1)) + numbs.slice(1));
+                setNumbs(numbs.slice(1))
+                setSign("neg");
+            }
+        }
     }
 
     return (
@@ -105,11 +198,11 @@ function App() {
                 <Button clas="buttonNorm" text="9" click={() => handleClick(9)}/>
                 <Button clas="buttonNorm" text="-" click={() => handleSndClick('-')}/>
                 <Button clas="buttonNorm" text="^2" click={() => pow()}/>
-                <Button clas="buttonNorm" text="sqrt" click={() => handleSndClick('sqrt')}/>
+                <Button clas="buttonNorm" text="sqrt" click={() => sqrt()}/>
                 <br/>
                 <Button clas="buttonNorm" text="0" click={() => handleClick(0)}/>
                 <Button clas="buttonNorm" text="." click={() => handleClick('.')}/>
-                <Button clas="buttonNorm" text="%" click={() => handleSndClick('%')}/>
+                <Button clas="buttonNorm" text="+/-" click={() => minOrPlus()}/>
                 <Button clas="buttonNorm" text="+" click={() => handleSndClick('+')}/>
                 <Button clas="buttonBig" text="=" click={() => calculate()}/>
             </div>
