@@ -11,6 +11,18 @@ function App() {
     const [sqrd, setSqrd] = useState("")
     const [ifSqr, setIfSqr] = useState(0);
     const [sign, setSign] = useState("neg");
+    const [result, setResult] = useState("");
+
+
+    useEffect(()=>{
+        if(equation > 0){
+            setSign("neg");
+        }else if(equation < 0){
+            setSign("pos");
+        }
+
+        setEquation(equation.toString());
+    }, [equation]);
 
     useEffect(()=>{
         if(ifNum === "not"){
@@ -32,8 +44,7 @@ function App() {
         }else{
             if(ifSqr === 1){
                 const sqrLength = sqrd.length + 1;
-                const sqrdNumb = Number(sqrd);
-                const mathSqrd = Math.sqrt(sqrdNumb);
+                const mathSqrd = Math.sqrt(Number(sqrd));
                 const stringSqrd = mathSqrd.toString()
                 if(sqrLength === numbs.length){
                     setCalculations(calculations.slice(0, -sqrLength) + stringSqrd + e);
@@ -66,36 +77,50 @@ function App() {
     }
 
     function calculate(){
-        if(equation === ""){
-            if(ifSqr === 1){
+        if(equation === "") {
+            if (ifSqr === 1) {
                 const sqrLength = sqrd.length + 1;
-                const sqrdNumb = Number(sqrd);
-                const mathSqrd = Math.sqrt(sqrdNumb);
+                const mathSqrd = Math.sqrt(Number(sqrd));
                 const stringSqrd = mathSqrd.toString()
-                if(calculations.slice(0, -sqrLength)===""){
+                if (calculations.slice(0, -sqrLength) === "") {
                     setEquation(eval(stringSqrd))
-                }else{
-                    if(calculations.length !== numbs.length){
-                        if(numbs.length === sqrLength){
+                } else {
+                    if (calculations.length !== numbs.length) {
+                        if (numbs.length === sqrLength) {
                             setEquation(eval(calculations.slice(0, -sqrLength) + stringSqrd));
-                        }else{
+                        } else {
                             setEquation(eval(calculations.slice(0, -sqrLength) + "*" + stringSqrd));
-                            console.log(calculations.slice(0, -sqrLength))
                         }
-                    }else{
+                    } else {
                         setEquation(eval(calculations.slice(0, -sqrLength) + "*" + stringSqrd));
                     }
                 }
                 setCalculations("");
                 setIfSqr(0)
                 setSqrd("")
-            }
-            else{
-                setEquation(eval(calculations));
-                setCalculations("");
-            }
+            } else {
+                if (ifSqr === 1) {
+                    if (ifSqr === 1) {
+                        const sqrLength = sqrd.length + 1;
+                        const mathSqrd = Math.sqrt(Number(sqrd));
+                        const stringSqrd = mathSqrd.toString()
+                        if (calculations.length !== numbs.length) {
+                            if (numbs.length === sqrLength) {
+                                setEquation(eval(calculations.slice(0, -sqrLength) + stringSqrd));
+                            } else {
+                                setEquation(eval(calculations.slice(0, -sqrLength) + "*" + stringSqrd));
+                            }
+                        } else {
+                            setEquation(eval(calculations.slice(0, -sqrLength) + "*" + stringSqrd));
+                        }
+                    }
+                    setEquation(eval(calculations));
+                    setCalculations("");
+                }
 
-            setNumbs("")
+                setIfNum("not");
+
+            }
         }
     }
 
@@ -112,27 +137,36 @@ function App() {
     }
 
     function del(){
-        setCalculations(calculations.slice(0, -1));
-        setNumbs(numbs.slice(0, -1));
-        setSqrd(sqrd.slice(0, -1));
-        if(sqrd === ""){
-            setIfSqr(0);
+        if(equation !== ""){
+            setEquation(equation.slice(0, -1));
+        }else{
+            setCalculations(calculations.slice(0, -1));
+            setNumbs(numbs.slice(0, -1));
+            setSqrd(sqrd.slice(0, -1));
+            if(sqrd === ""){
+                setIfSqr(0);
+            }
         }
     }
 
     function clear(){
         setCalculations("");
         setNumbs("");
-        setEquation("")
-        setSqrd("")
+        setEquation("");
+        setSqrd("");
+        setSign("neg");
     }
 
     function pow(){
-        const numbLength = numbs.length
-        const power = numbs + "*" + numbs;
-        const toPower = eval(power)
-        setCalculations(calculations.slice(0, -numbLength) + toPower)
-        setNumbs(toPower)
+        if(equation !== ""){
+            const power = equation + "*" + equation;
+            setEquation(eval(power));
+        }else{
+            const power = numbs + "*" + numbs;
+            const toPower = eval(power)
+            setCalculations(calculations.slice(0, -numbs.length) + toPower)
+            setNumbs(toPower)
+        }
     }
 
     function sqrt(){
@@ -149,28 +183,30 @@ function App() {
     }
 
     function minOrPlus(){
-        if(numbs === ""){
-            if(equation !== ""){
-                if(sign === "neg"){
-                    setEquation("-" + equation);
+        if(numbs === "0" || equation === "0"){
+            alert("Can't change signs on zero");
+        }else {
+            if (numbs === "") {
+                if (equation !== "") {
+                    if (sign === "neg") {
+                        setEquation("-" + equation);
+                        setSign("pos");
+                    } else if (sign === "pos") {
+                        setEquation(equation.slice(1));
+                        setSign("neg");
+                    }
+                }
+            } else {
+                if (sign === "neg") {
+                    setCalculations(calculations.slice(0, -numbs.length) + "(-" + numbs + ")");
+                    setNumbs("(-" + numbs + ")");
                     setSign("pos");
-                }else{
-                    setEquation(equation.slice(1));
+                } else if (sign === "pos") {
+                    setCalculations(calculations.slice(0, -(numbs.length)) + numbs.slice(2, -1));
+                    setNumbs(numbs.slice(2, -1));
                     setSign("neg");
                 }
-            }else{
-                alert("You can only change signs on a number");
-            }
-        }else{
-            if(sign === "neg"){
-                console.log(calculations + ", " + numbs);
-                setCalculations(calculations.slice(0, -numbs.length) + "-" + numbs);
-                setNumbs("-" + numbs);
-                setSign("pos");
-            }else{
-                setCalculations(calculations.slice(0, -(numbs.length+1)) + numbs.slice(1));
-                setNumbs(numbs.slice(1))
-                setSign("neg");
+
             }
         }
     }
