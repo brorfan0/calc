@@ -16,23 +16,25 @@ function App() {
     const [ifDelete, setIfDelete] = useState(false);
     const nonNumbers = ["+", "-", "/", "*"];
 
-    //TODO figure out a different way to store stuff bc it's not possible to properly use the 'power of' function after deleting further than the numbs var. otherwise it seems fine??
+    //TODO figure out a different way to store stuff bc it's not possible to properly use the 'power of' function after deleting further than the numbs var (probably make an array (or change numbs into an array) to store different numbs between + etc that clears after deletion. too lazy to do it now)
     //TODO FIGURE OUT WHAT TO USE INSTEAD OF IFS BC IT LOOKS RIDICULOUS LIKE THAT
     //TODO add a limit on the size of characters visible in the output, find out how to run functions on keyboard buttons press
     //TODO put alerts/errors somewhere under output instead of as an alert
     //TODO make it prettier:(
+    //TODO make it possible to nest brackets gcfhchfchfchhxhreh
 
 
     useEffect(()=>{
         if(ifDelete === true){
             setIfDelete(false);
         }else{
-            if(brackets === 1 || brackets === 2){
-                setInsideBrackets(insideBrackets + calculations.slice(calculations.length - 1));
-            }else{
+            if(brackets === 0){
                 setInsideBrackets("");
+            }else{
+                setInsideBrackets(insideBrackets + calculations.slice(calculations.length - 1));
             }
         }
+        console.log(insideBrackets)
     },[calculations]);
 
     useEffect(()=>{
@@ -71,9 +73,15 @@ function App() {
                 setSign("neg");
                 setCalculations(calculations+e);
         }
+        if(brackets === 2){
+            setBrackets(0);
+        }
     }
 
     function handleClick(e){
+        if(calculations.slice(calculations.length-1) === ")"){
+            alert("Can't use a number straight after the closing bracket");
+        }else{
             switch(e){
                 case ".":
                     if(dot === false){
@@ -98,7 +106,10 @@ function App() {
                     }
                     break;
             }
-
+        }
+        if(brackets === 2){
+            setBrackets(0);
+        }
         // setCalculations((prevState) => {return prevState+e})
     }
 
@@ -106,6 +117,7 @@ function App() {
         if(equation === ""){
                     setEquation(eval(calculations));
                     setCalculations("");
+                    setBrackets(0);
                 }
         setIfNum("not");
     }
@@ -178,15 +190,16 @@ function App() {
             console.log(insideBrackets)
             const power = brackets === 2 ? (eval(insideBrackets) + "*" + eval(insideBrackets)) : (numbs + "*" + numbs);
             const toPower = eval(power);
-            brackets === 2 ? (setCalculations(calculations.slice(0, -insideBrackets.length) + toPower), setBrackets(0)) : setCalculations(calculations.slice(0, -numbs.length) + toPower);
+            brackets === 2 ? (setCalculations(calculations.slice(0, -insideBrackets.length) + toPower), setBrackets(0))
+                : setCalculations(calculations.slice(0, -numbs.length) + toPower);
             setNumbs(toPower.toString());
         }
     }
 
     function minOrPlus(){
-        //TODO add either error on trying to change signs on closed brackets or a way to change signs on closed brackets, whichever makes more sense idk
-        if(numbs === "0" || equation === "0"){
-            alert("Can't change signs on zero");
+        if(numbs === "0" || equation === "0" || nonNumbers.includes(calculations.slice(calculations.length-1)) === true ||
+            calculations.slice(calculations.length-1) === "(" || calculations.slice(calculations.length-1) === ")"){
+            alert("Can only change signs on a number (different than zero)");
         }else{
             if (numbs === "" && equation !== "") {
                     switch(sign){
