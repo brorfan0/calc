@@ -34,7 +34,6 @@ function App() {
                 setInsideBrackets(insideBrackets + calculations.slice(calculations.length - 1));
             }
         }
-        console.log(insideBrackets)
     },[calculations]);
 
     useEffect(()=>{
@@ -135,6 +134,8 @@ function App() {
     }
 
     function del(){
+        //TODO all of this is a mess but idk how else to do it help
+        console.log(calculations.charAt(calculations.length-2))
         setIfDelete(true);
         if(equation !== ""){
             setEquation(equation.slice(0, -1));
@@ -150,6 +151,9 @@ function App() {
             }
             if(calculations.slice(calculations.length -1) === ")"){
                 setBrackets(1);
+            }
+            if(calculations.charAt(calculations.length-2) === ""){
+                setEmpty(true);
             }
             if(brackets === 1){
                 setInsideBrackets(insideBrackets.slice(0, -1));
@@ -187,7 +191,6 @@ function App() {
             const power = equation + "*" + equation;
             setEquation(eval(power));
         }else{
-            console.log(insideBrackets)
             const power = brackets === 2 ? (eval(insideBrackets) + "*" + eval(insideBrackets)) : (numbs + "*" + numbs);
             const toPower = eval(power);
             brackets === 2 ? (setCalculations(calculations.slice(0, -insideBrackets.length) + toPower), setBrackets(0))
