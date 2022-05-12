@@ -9,9 +9,10 @@ function App() {
     const [numbs, setNumbs] = useState("");
     const [ifNum, setIfNum] = useState("");
     const [sqrd, setSqrd] = useState("")
-    const [ifSqr, setIfSqr] = useState(0);
+    const [ifSqr, setIfSqr] = useState(false);
     const [sign, setSign] = useState("neg");
-    const [result, setResult] = useState("");
+    const [empty, setEmpty] = useState(true);
+    const [dot, setDot] = useState(false);
 
 
     useEffect(()=>{
@@ -25,11 +26,19 @@ function App() {
     }, [equation]);
 
     useEffect(()=>{
-        if(ifNum === "not"){
-            setNumbs("")
-        }else{
-            const added = calculations.slice(-1)
-            setNumbs(numbs+added)
+        switch(ifNum){
+            case "not":
+                setNumbs("");
+                setEmpty(true);
+                setDot(false);
+                break;
+            default:
+                const added = calculations.slice(-1);
+                if(numbs === "" && dot === true){
+                    setNumbs("0" + added);
+                }else{
+                    setNumbs(numbs + added);
+                }
         }
     }, [ifNum]);
 
@@ -42,7 +51,7 @@ function App() {
             setCalculations(equation+e);
             setEquation("")
         }else{
-            if(ifSqr === 1){
+            if(ifSqr === true){
                 const sqrLength = sqrd.length + 1;
                 const mathSqrd = Math.sqrt(Number(sqrd));
                 const stringSqrd = mathSqrd.toString()
@@ -51,8 +60,7 @@ function App() {
                 }else{
                     setCalculations(calculations.slice(0, -sqrLength) + "*" + stringSqrd + e);
                 }
-                console.log(sqrLength + ", " + numbs.length)
-                setIfSqr(0)
+                setIfSqr(false)
             }else{
                 setCalculations(calculations+e);
             }
@@ -60,31 +68,46 @@ function App() {
     }
 
     function handleClick(e){
-        setIfNum(ifNum+"num");
+            switch(e){
+                case ".":
+                    if(dot === false){
+                        empty ? setCalculations(calculations + "0" + e) : setCalculations(calculations + e);
 
-        if(ifSqr === 1){
-            setSqrd(sqrd+e);
-        }
+                        setDot(true);
+                        setIfNum(ifNum+"num");
+                        setEmpty(false);
+                    }else{
+                        alert("can't use dot twice in the same number");
+                    }
+                    break;
+                default:
+                    setIfNum(ifNum+"num");
+                    setEmpty(false);
 
-        if(equation === "") {
-            setCalculations(calculations+e);
-        }
-        else{
-            setCalculations(calculations+e);
-            setEquation("");
-        }
+                    ifSqr ? setSqrd(sqrd+e) : "";
+
+                    if(equation === "") {
+                        setCalculations(calculations+e);
+                    }
+                    else{
+                        setCalculations(calculations+e);
+                        setEquation("");
+                    }
+                    break;
+            }
+
         // setCalculations((prevState) => {return prevState+e})
     }
 
     function calculate(){
-        if(equation === "") {
-            if (ifSqr === 1) {
+        if(equation === ""){
+            if(ifSqr === true){
                 const sqrLength = sqrd.length + 1;
                 const mathSqrd = Math.sqrt(Number(sqrd));
                 const stringSqrd = mathSqrd.toString()
                 if (calculations.slice(0, -sqrLength) === "") {
                     setEquation(eval(stringSqrd))
-                } else {
+                }else{
                     if (calculations.length !== numbs.length) {
                         if (numbs.length === sqrLength) {
                             setEquation(eval(calculations.slice(0, -sqrLength) + stringSqrd));
@@ -96,11 +119,10 @@ function App() {
                     }
                 }
                 setCalculations("");
-                setIfSqr(0)
+                setIfSqr(false)
                 setSqrd("")
-            } else {
-                if (ifSqr === 1) {
-                    if (ifSqr === 1) {
+            }else{
+                if (ifSqr === true) {
                         const sqrLength = sqrd.length + 1;
                         const mathSqrd = Math.sqrt(Number(sqrd));
                         const stringSqrd = mathSqrd.toString()
@@ -113,7 +135,7 @@ function App() {
                         } else {
                             setEquation(eval(calculations.slice(0, -sqrLength) + "*" + stringSqrd));
                         }
-                    }
+                }else{
                     setEquation(eval(calculations));
                     setCalculations("");
                 }
@@ -140,17 +162,22 @@ function App() {
         if(equation !== ""){
             setEquation(equation.slice(0, -1));
         }else{
+            if(numbs.slice(numbs.length -1) === "."){
+                setDot(false);
+            }
             setCalculations(calculations.slice(0, -1));
             setNumbs(numbs.slice(0, -1));
             setSqrd(sqrd.slice(0, -1));
             if(sqrd === ""){
-                setIfSqr(0);
+                setIfSqr(false);
             }
         }
     }
 
     function clear(){
         setCalculations("");
+        setDot(false);
+        setEmpty(true);
         setNumbs("");
         setEquation("");
         setSqrd("");
@@ -172,12 +199,12 @@ function App() {
     function sqrt(){
         if(equation !== ""){
             setIfNum("num");
-            setIfSqr(1);
+            setIfSqr(true);
             setCalculations(equation+"s");
             setEquation("");
         }else{
             setIfNum("num");
-            setIfSqr(1);
+            setIfSqr(true);
             setCalculations(calculations+"s");
         }
     }
@@ -185,26 +212,30 @@ function App() {
     function minOrPlus(){
         if(numbs === "0" || equation === "0"){
             alert("Can't change signs on zero");
-        }else {
-            if (numbs === "") {
-                if (equation !== "") {
-                    if (sign === "neg") {
-                        setEquation("-" + equation);
-                        setSign("pos");
-                    } else if (sign === "pos") {
-                        setEquation(equation.slice(1));
-                        setSign("neg");
+        }else{
+            if (numbs === "" && equation !== "") {
+                    switch(sign){
+                        case "neg":
+                            setEquation("-" + equation);
+                            setSign("pos");
+                            break;
+                        case "pos":
+                            setEquation(equation.slice(1));
+                            setSign("neg");
+                            break;
                     }
-                }
-            } else {
-                if (sign === "neg") {
-                    setCalculations(calculations.slice(0, -numbs.length) + "(-" + numbs + ")");
-                    setNumbs("(-" + numbs + ")");
-                    setSign("pos");
-                } else if (sign === "pos") {
-                    setCalculations(calculations.slice(0, -(numbs.length)) + numbs.slice(2, -1));
-                    setNumbs(numbs.slice(2, -1));
-                    setSign("neg");
+            }else{
+                switch(sign){
+                    case "neg":
+                        setCalculations(calculations.slice(0, -numbs.length) + "(-" + numbs + ")");
+                        setNumbs("(-" + numbs + ")");
+                        setSign("pos");
+                        break;
+                    case "pos":
+                        setCalculations(calculations.slice(0, -(numbs.length)) + numbs.slice(2, -1));
+                        setNumbs(numbs.slice(2, -1));
+                        setSign("neg");
+                        break;
                 }
 
             }
