@@ -20,6 +20,7 @@ function App() {
     //TODO FIGURE OUT WHAT TO USE INSTEAD OF IFS BC IT LOOKS RIDICULOUS LIKE THAT
     //TODO add a limit on the size of characters visible in the output, find out how to run functions on keyboard buttons press
     //TODO put alerts/errors somewhere under output instead of as an alert
+    //TODO make it prettier:(
 
 
     useEffect(()=>{
