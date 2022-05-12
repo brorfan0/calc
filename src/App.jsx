@@ -8,8 +8,6 @@ function App() {
     const [equation, setEquation] = useState("");
     const [numbs, setNumbs] = useState("");
     const [ifNum, setIfNum] = useState("");
-    const [sqrd, setSqrd] = useState("")
-    const [ifSqr, setIfSqr] = useState(false);
     const [sign, setSign] = useState("neg");
     const [empty, setEmpty] = useState(true);
     const [dot, setDot] = useState(false);
@@ -51,19 +49,7 @@ function App() {
             setCalculations(equation+e);
             setEquation("")
         }else{
-            if(ifSqr === true){
-                const sqrLength = sqrd.length + 1;
-                const mathSqrd = Math.sqrt(Number(sqrd));
-                const stringSqrd = mathSqrd.toString()
-                if(sqrLength === numbs.length){
-                    setCalculations(calculations.slice(0, -sqrLength) + stringSqrd + e);
-                }else{
-                    setCalculations(calculations.slice(0, -sqrLength) + "*" + stringSqrd + e);
-                }
-                setIfSqr(false)
-            }else{
-                setCalculations(calculations+e);
-            }
+            setCalculations(calculations+e);
         }
     }
 
@@ -72,7 +58,6 @@ function App() {
                 case ".":
                     if(dot === false){
                         empty ? setCalculations(calculations + "0" + e) : setCalculations(calculations + e);
-
                         setDot(true);
                         setIfNum(ifNum+"num");
                         setEmpty(false);
@@ -83,8 +68,6 @@ function App() {
                 default:
                     setIfNum(ifNum+"num");
                     setEmpty(false);
-
-                    ifSqr ? setSqrd(sqrd+e) : "";
 
                     if(equation === "") {
                         setCalculations(calculations+e);
@@ -101,49 +84,10 @@ function App() {
 
     function calculate(){
         if(equation === ""){
-            if(ifSqr === true){
-                const sqrLength = sqrd.length + 1;
-                const mathSqrd = Math.sqrt(Number(sqrd));
-                const stringSqrd = mathSqrd.toString()
-                if (calculations.slice(0, -sqrLength) === "") {
-                    setEquation(eval(stringSqrd))
-                }else{
-                    if (calculations.length !== numbs.length) {
-                        if (numbs.length === sqrLength) {
-                            setEquation(eval(calculations.slice(0, -sqrLength) + stringSqrd));
-                        } else {
-                            setEquation(eval(calculations.slice(0, -sqrLength) + "*" + stringSqrd));
-                        }
-                    } else {
-                        setEquation(eval(calculations.slice(0, -sqrLength) + "*" + stringSqrd));
-                    }
-                }
-                setCalculations("");
-                setIfSqr(false)
-                setSqrd("")
-            }else{
-                if (ifSqr === true) {
-                        const sqrLength = sqrd.length + 1;
-                        const mathSqrd = Math.sqrt(Number(sqrd));
-                        const stringSqrd = mathSqrd.toString()
-                        if (calculations.length !== numbs.length) {
-                            if (numbs.length === sqrLength) {
-                                setEquation(eval(calculations.slice(0, -sqrLength) + stringSqrd));
-                            } else {
-                                setEquation(eval(calculations.slice(0, -sqrLength) + "*" + stringSqrd));
-                            }
-                        } else {
-                            setEquation(eval(calculations.slice(0, -sqrLength) + "*" + stringSqrd));
-                        }
-                }else{
                     setEquation(eval(calculations));
                     setCalculations("");
                 }
-
                 setIfNum("not");
-
-            }
-        }
     }
 
     function output(){
@@ -167,10 +111,6 @@ function App() {
             }
             setCalculations(calculations.slice(0, -1));
             setNumbs(numbs.slice(0, -1));
-            setSqrd(sqrd.slice(0, -1));
-            if(sqrd === ""){
-                setIfSqr(false);
-            }
         }
     }
 
@@ -180,7 +120,6 @@ function App() {
         setEmpty(true);
         setNumbs("");
         setEquation("");
-        setSqrd("");
         setSign("neg");
     }
 
@@ -193,19 +132,6 @@ function App() {
             const toPower = eval(power)
             setCalculations(calculations.slice(0, -numbs.length) + toPower)
             setNumbs(toPower)
-        }
-    }
-
-    function sqrt(){
-        if(equation !== ""){
-            setIfNum("num");
-            setIfSqr(true);
-            setCalculations(equation+"s");
-            setEquation("");
-        }else{
-            setIfNum("num");
-            setIfSqr(true);
-            setCalculations(calculations+"s");
         }
     }
 
@@ -265,7 +191,7 @@ function App() {
                 <Button clas="buttonNorm" text="9" click={() => handleClick(9)}/>
                 <Button clas="buttonNorm" text="-" click={() => handleSndClick('-')}/>
                 <Button clas="buttonNorm" text="^2" click={() => pow()}/>
-                <Button clas="buttonNorm" text="sqrt" click={() => sqrt()}/>
+                <Button clas="buttonNorm" text=":)"/>
                 <br/>
                 <Button clas="buttonNorm" text="0" click={() => handleClick(0)}/>
                 <Button clas="buttonNorm" text="." click={() => handleClick('.')}/>
