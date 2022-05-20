@@ -15,6 +15,8 @@ function App() {
     const [insideBrackets, setInsideBrackets] = useState("");
     const [ifDelete, setIfDelete] = useState(false);
     const nonNumbers = ["+", "-", "/", "*"];
+    const [openingBrackets, setOpeningBrackets] = useState(0);
+    const [closingBrackets, setClosingBrackets] = useState(0);
 
     //TODO figure out a different way to store stuff bc it's not possible to properly use the 'power of' function after deleting further than the numbs var (probably make an array (or change numbs into an array) to store different numbs between + etc that clears after deletion. too lazy to do it now)
     //TODO FIGURE OUT WHAT TO USE INSTEAD OF IFS BC IT LOOKS RIDICULOUS LIKE THAT
@@ -28,7 +30,7 @@ function App() {
         if(ifDelete === true){
             setIfDelete(false);
         }else{
-            if(brackets === 0){
+            if(openingBrackets === closingBrackets && brackets === 0){
                 setInsideBrackets("");
             }else{
                 setInsideBrackets(insideBrackets + calculations.slice(calculations.length - 1));
@@ -68,9 +70,13 @@ function App() {
                 equation === "" ? alert("can't do this") : (setCalculations(equation+e), setEquation(""));
                 break;
             default:
-                setIfNum("not");
-                setSign("neg");
-                setCalculations(calculations+e);
+                if(calculations===""){
+                    alert("can't do this");
+                }else{
+                    setIfNum("not");
+                    setSign("neg");
+                    setCalculations(calculations+e);
+                }
         }
         if(brackets === 2){
             setBrackets(0);
@@ -113,7 +119,7 @@ function App() {
     }
 
     function calculate(){
-        if(equation === ""){
+        if(equation === "" && calculations!== ""){
                     setEquation(eval(calculations));
                     setCalculations("");
                     setBrackets(0);
@@ -135,7 +141,6 @@ function App() {
 
     function del(){
         //TODO all of this is a mess but idk how else to do it help
-        console.log(calculations.charAt(calculations.length-2))
         setIfDelete(true);
         if(equation !== ""){
             setEquation(equation.slice(0, -1));
@@ -145,17 +150,22 @@ function App() {
             }
             if(calculations.slice(calculations.length -1) === "("){
                 setBrackets(0);
+                setOpeningBrackets(openingBrackets-1);
             }
             if(nonNumbers.includes(calculations.charAt(calculations.length-2)) === true){
                 setEmpty(true);
             }
+            if(nonNumbers.includes(calculations.slice(calculations.length - 1)) === true){
+                setIfNum("num")
+            }
             if(calculations.slice(calculations.length -1) === ")"){
                 setBrackets(1);
+                setClosingBrackets(closingBrackets-1);
             }
             if(calculations.charAt(calculations.length-2) === ""){
                 setEmpty(true);
             }
-            if(brackets === 1){
+            if(openingBrackets > closingBrackets){
                 setInsideBrackets(insideBrackets.slice(0, -1));
             }
             setCalculations(calculations.slice(0, -1));
@@ -172,17 +182,21 @@ function App() {
         setSign("neg");
         setBrackets(0);
         setInsideBrackets("");
+        setOpeningBrackets(0);
+        setClosingBrackets(0);
     }
 
     function addBrackets(){
-        switch(brackets){
-            case 0:
-                empty ? (setCalculations(calculations + "("), setBrackets(1)) : alert("Can't do this");
-                break;
-            case 1:
-                setCalculations(calculations + ")");
-                setBrackets(2);
-                break;
+        empty ? (setCalculations(calculations + "("), setBrackets(1), setOpeningBrackets(openingBrackets+1)) : alert("Can't do this");
+    }
+
+    function closeBrackets(){
+        if(openingBrackets < closingBrackets+1){
+            alert("Can't do this");
+        }else{
+            setCalculations(calculations + ")");
+            setBrackets(2);
+            setClosingBrackets(closingBrackets+1)
         }
     }
 
@@ -200,7 +214,7 @@ function App() {
     }
 
     function minOrPlus(){
-        if(numbs === "0" || equation === "0" || nonNumbers.includes(calculations.slice(calculations.length-1)) === true ||
+        if(numbs === "0" || numbs === "" || equation === "0" || nonNumbers.includes(calculations.slice(calculations.length-1)) === true ||
             calculations.slice(calculations.length-1) === "(" || calculations.slice(calculations.length-1) === ")"){
             alert("Can only change signs on a number (different than zero)");
         }else{
@@ -249,7 +263,7 @@ function App() {
                 <Button clas="buttonNorm" text="6" click={() => handleClick(6)}/>
                 <Button clas="buttonNorm" text="*" click={() => handleSndClick('*')}/>
                 <Button clas="buttonNorm" text="(" click={() => addBrackets()}/>
-                <Button clas="buttonNorm" text=")" click={() => addBrackets()}/>
+                <Button clas="buttonNorm" text=")" click={() => closeBrackets()}/>
                 <br/>
                 <Button clas="buttonNorm" text="7" click={() => handleClick(7)}/>
                 <Button clas="buttonNorm" text="8" click={() => handleClick(8)}/>
