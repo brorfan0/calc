@@ -13,6 +13,14 @@
 .cont{
 }
 
+.Toastify__toast-theme--light{
+  background-color: #ffdafe !important;
+}
+
+.toast-color{
+  background-color: pink;
+}
+
 button {
   font-size: calc(10px + 2vmin);
 }
