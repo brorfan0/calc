@@ -1,16 +1,16 @@
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
+/*@keyframes App-logo-spin {*/
+/*    from {*/
+/*        transform: rotate(0deg);*/
+/*    }*/
+/*    to {*/
+/*        transform: rotate(360deg);*/
+/*    }*/
+/*}*/
 
-button:hover{
-    animation: App-logo-spin infinite 0.01s linear;
-}
+/*button:hover{*/
+/*    animation: App-logo-spin infinite 0.01s linear;*/
+/*}*/
 
-button{
-    transition: transform .07s ease-in;
-}
+/*button{*/
+/*    transition: transform .07s ease-in;*/
+/*}*/
