@@ -7,9 +7,10 @@
 /*    }*/
 /*}*/
 
-/*button:hover{*/
-/*    animation: App-logo-spin infinite 0.01s linear;*/
-/*}*/
+button:hover{
+    /*animation: App-logo-spin infinite 0.01s linear;*/
+    background-color: #c5a3ef;
+}
 
 /*button{*/
 /*    transition: transform .07s ease-in;*/
